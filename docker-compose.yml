@@ -1,0 +1,206 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: trading-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: trading-db
+    environment:
+      POSTGRES_USER: trading_user
+      POSTGRES_PASSWORD: trading_pass
+      POSTGRES_DB: trading_sim
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trading_user"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  analyst_1:
+    build: .
+    container_name: analyst-1
+    environment:
+      - AGENT_TYPE=analyst
+      - AGENT_ID=analyst_1
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./reports:/app/reports
+
+  analyst_2:
+    build: .
+    container_name: analyst-2
+    environment:
+      - AGENT_TYPE=analyst
+      - AGENT_ID=analyst_2
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  analyst_3:
+    build: .
+    container_name: analyst-3
+    environment:
+      - AGENT_TYPE=analyst
+      - AGENT_ID=analyst_3
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  trader_1:
+    build: .
+    container_name: trader-1
+    environment:
+      - AGENT_TYPE=trader
+      - AGENT_ID=trader_1
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  trader_2:
+    build: .
+    container_name: trader-2
+    environment:
+      - AGENT_TYPE=trader
+      - AGENT_ID=trader_2
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  trader_3:
+    build: .
+    container_name: trader-3
+    environment:
+      - AGENT_TYPE=trader
+      - AGENT_ID=trader_3
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  trader_4:
+    build: .
+    container_name: trader-4
+    environment:
+      - AGENT_TYPE=trader
+      - AGENT_ID=trader_4
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  risk_manager_1:
+    build: .
+    container_name: risk-manager-1
+    environment:
+      - AGENT_TYPE=risk_manager
+      - AGENT_ID=risk_manager_1
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  risk_manager_2:
+    build: .
+    container_name: risk-manager-2
+    environment:
+      - AGENT_TYPE=risk_manager
+      - AGENT_ID=risk_manager_2
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  reporter:
+    build: .
+    container_name: reporter
+    environment:
+      - AGENT_TYPE=reporter
+      - AGENT_ID=reporter_1
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./reports:/app/reports
+
+  orchestrator:
+    build: .
+    container_name: orchestrator
+    environment:
+      - MESSAGE_BUS_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./reports:/app/reports
+    command: python src/main.py
+
+volumes:
+  redis_data:
+  postgres_data:
