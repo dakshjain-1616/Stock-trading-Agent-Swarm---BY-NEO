@@ -9,7 +9,7 @@
 
 ---
 
-This repository was built by **[NEO](vscode:extension/NeoResearchInc.heyneo)**, an autonomous ML agent capable of end-to-end software development — from architecture design to deployment.
+This repository was built by **<a href="vscode:extension/NeoResearchInc.heyneo" style="color:#1a7fd4;">NEO</a>**, an autonomous ML agent capable of end-to-end software development — from architecture design to deployment.
 
 ---
 
@@ -119,4 +119,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-*Built autonomously by [NEO](vscode:extension/NeoResearchInc.heyneo) — an ML agent that designed, coded, and deployed this system end-to-end. More of NEO's work: [Medical Report Analysis Pipeline](https://github.com/dakshjain-1616/Medical-Report-Analysis-Pipeline-by-Neo).*
+*Built autonomously by <a href="vscode:extension/NeoResearchInc.heyneo" style="color:#1a7fd4;">NEO</a> — an ML agent that designed, coded, and deployed this system end-to-end. More of NEO's work: [Medical Report Analysis Pipeline](https://github.com/dakshjain-1616/Medical-Report-Analysis-Pipeline-by-Neo).*
